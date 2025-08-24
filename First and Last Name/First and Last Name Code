@@ -1,0 +1,29 @@
+section .data
+    name db 'Krish', 0xA      ; First name + newline
+    len1 equ $ - name
+
+    surname db 'Jha', 0xA     ; Surname + newline
+    len2 equ $ - surname
+
+section .text
+    global _start
+
+_start:
+    ; Print first name
+    mov eax, 4        ; sys_write
+    mov ebx, 1        ; stdout
+    mov ecx, name     ; message
+    mov edx, len1     ; length
+    int 0x80
+
+    ; Print surname
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, surname
+    mov edx, len2
+    int 0x80
+
+    ; Exit
+    mov eax, 1
+    xor ebx, ebx
+    int 0x80
