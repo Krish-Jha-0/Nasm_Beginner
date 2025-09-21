@@ -1,0 +1,55 @@
+section .data
+    arr1 db '3','5','4'
+    arr2 db '4','2','1'
+    len equ 3
+    newline db 10
+    space db " "
+
+section .text
+    global _start
+
+_start:
+    mov rcx, len
+    mov rsi, arr1
+    mov rdi, arr2
+
+.loop:
+    mov al, [rsi]     ; ASCII digit
+    add al, [rdi]     ; add with ASCII
+    sub al, '0'       ; normalize
+    aaa               ; ASCII adjust after add
+    add ax, 3030h     ; back to ASCII
+    mov dl, al
+
+    ; print result
+    mov rax, 1
+    mov rdi, 1
+    lea rsi, [rsp-1]
+    push rdx
+    mov byte [rsp-1], dl
+    mov rdx, 1
+    syscall
+    pop rdx
+
+    ; print space
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, space
+    mov rdx, 1
+    syscall
+
+    inc rsi
+    inc rdi
+    loop .loop
+
+    ; newline
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, newline
+    mov rdx, 1
+    syscall
+
+    ; exit
+    mov rax, 60
+    xor rdi, rdi
+    syscall
