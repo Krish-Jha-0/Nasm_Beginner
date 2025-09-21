@@ -1,0 +1,63 @@
+section .data
+    arr1 db 2,3,4
+    arr2 db 5,1,3
+    len equ 3
+    newline db 10
+
+section .bss
+    result resb 3
+
+section .text
+    global _start
+
+_start:
+    mov rcx, len
+    mov rsi, arr1
+    mov rdi, arr2
+    mov rbx, result
+
+.loop:
+    mov al, [rsi]
+    add al, [rdi]      ; add elements
+    mov [rbx], al
+
+    ; print as ASCII digit
+    add al, '0'
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, rsp
+    push rax
+    mov byte [rsp-1], al
+    mov rsi, rsp-1
+    mov rdx, 1
+    mov rax, 1
+    mov rdi, 1
+    syscall
+    pop rax
+
+    ; print space
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, space
+    mov rdx, 1
+    syscall
+
+    inc rsi
+    inc rdi
+    inc rbx
+    loop .loop
+
+    ; newline
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, newline
+    mov rdx, 1
+    syscall
+
+    ; exit
+    mov rax, 60
+    xor rdi, rdi
+    syscall
+
+section .data
+    space db " "
