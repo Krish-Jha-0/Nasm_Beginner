@@ -1,0 +1,36 @@
+section .bss
+    name resb 32    ; buffer for input
+
+section .data
+    msg db "Hello, ", 0
+    newline db 10
+
+section .text
+    global _start
+
+_start:
+    ; read(0, name, 32)
+    mov rax, 0      ; syscall: read
+    mov rdi, 0      ; stdin
+    mov rsi, name
+    mov rdx, 32
+    syscall
+
+    ; write(1, "Hello, ", 7)
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, msg
+    mov rdx, 7
+    syscall
+
+    ; write(1, name, N)
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, name
+    mov rdx, 32     ; just print buffer (includes newline)
+    syscall
+
+    ; exit(0)
+    mov rax, 60
+    xor rdi, rdi
+    syscall
