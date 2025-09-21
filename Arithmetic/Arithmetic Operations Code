@@ -1,0 +1,145 @@
+section .bss
+    num1 resb 16
+    num2 resb 16
+    result resb 32
+
+section .data
+    msg1 db "Enter first number: ",0
+    len1 equ $-msg1
+    msg2 db "Enter second number: ",0
+    len2 equ $-msg2
+    newline db 10
+
+section .text
+    global _start
+
+_start:
+    ; ==============================
+    ; PART 1 – REGISTER VALUES
+    ; ==============================
+    mov rax, 8
+    mov rbx, 2
+
+    ; ADDITION
+    mov rax, 8
+    mov rbx, 2
+    add rax, rbx         ; rax = 10
+    call print_number
+
+    ; SUBTRACTION
+    mov rax, 8
+    mov rbx, 2
+    sub rax, rbx         ; rax = 6
+    call print_number
+
+    ; MULTIPLICATION
+    mov rax, 8
+    mov rbx, 2
+    imul rbx             ; rax = 16
+    call print_number
+
+    ; DIVISION
+    mov rax, 8
+    xor rdx, rdx
+    mov rbx, 2
+    div rbx              ; rax = 4
+    call print_number
+
+
+    ; ==============================
+    ; PART 2 – USER INPUT VALUES
+    ; ==============================
+
+    ; Print msg1
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, msg1
+    mov rdx, len1
+    syscall
+
+    ; Read first number
+    mov rax, 0
+    mov rdi, 0
+    mov rsi, num1
+    mov rdx, 16
+    syscall
+
+    ; Print msg2
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, msg2
+    mov rdx, len2
+    syscall
+
+    ; Read second number
+    mov rax, 0
+    mov rdi, 0
+    mov rsi, num2
+    mov rdx, 16
+    syscall
+
+    ; Convert ASCII → int (single digit only for simplicity)
+    movzx rax, byte [num1]
+    sub rax, '0'
+    movzx rbx, byte [num2]
+    sub rbx, '0'
+
+    mov rcx, rax   ; save first
+    mov rdx, rbx   ; save second
+
+    ; ADDITION
+    mov rax, rcx
+    add rax, rdx
+    call print_number
+
+    ; SUBTRACTION
+    mov rax, rcx
+    sub rax, rdx
+    call print_number
+
+    ; MULTIPLICATION
+    mov rax, rcx
+    imul rdx
+    call print_number
+
+    ; DIVISION
+    mov rax, rcx
+    xor rdx, rdx
+    div rbx
+    call print_number
+
+    ; Exit
+    mov rax, 60
+    xor rdi, rdi
+    syscall
+
+
+; ==============================
+; HELPER: print_number
+; ==============================
+print_number:
+    mov rcx, result+31
+    mov rbx, 10
+.convert:
+    xor rdx, rdx
+    div rbx
+    add dl, '0'
+    dec rcx
+    mov [rcx], dl
+    test rax, rax
+    jnz .convert
+
+    ; print
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, rcx
+    mov rdx, result+32 - rcx
+    syscall
+
+    ; newline
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, newline
+    mov rdx, 1
+    syscall
+    ret
